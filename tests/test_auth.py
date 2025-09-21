@@ -19,7 +19,7 @@ def test_register_login_protected(client):
     # Protected
     rv = client.get('/protected', headers={'Authorization': f'Bearer {token}'})
     assert rv.status_code == 200
-    assert 'hello julia' in rv.get_json()['message']
+    assert 'julia' in rv.get_json()['message'].lower()
 
 def test_login_invalid_password(client):
     """

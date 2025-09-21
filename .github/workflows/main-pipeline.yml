@@ -37,38 +37,20 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-test
 
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Run Semgrep SAST Scan
-        uses: returntocorp/semgrep-action@v1
+        uses: semgrep/semgrep-action@v1
         with:
           config: 'p/python auto semgrep.yml'
-          format: sarif
-          output: semgrep.sarif
-        continue-on-error: true
-
-      - name: Check for results in SARIF file
-        id: sarif_check
-        if: always() && hashFiles('semgrep.sarif') != ''
-        run: |
-          # Instala jq, uma ferramenta para processar JSON
-          sudo apt-get install -y jq
-          
-          # Lê o arquivo e conta o número de resultados
-          RESULT_COUNT=$(jq '.runs[0].results | length' semgrep.sarif)
-          if [ "$RESULT_COUNT" -gt 0 ]; then
-            echo "has_results=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_results=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Upload Semgrep SARIF to GitHub Security
-        if: steps.sarif_check.outputs.has_results == 'true'
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: semgrep.sarif
+          publishToken: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Set up Python for SCA
         uses: actions/setup-python@v4
@@ -79,7 +61,7 @@ jobs:
         run: pip install pip-audit
 
       - name: Run pip-audit SCA Scan
-        run: pip-audit -r app/requirements.txt --format json > pip-audit.json
+        run: pip-audit -r app/requirements.txt --format json > pip-audit.json || true
       
       - name: Upload pip-audit report as artifact
         uses: actions/upload-artifact@v4

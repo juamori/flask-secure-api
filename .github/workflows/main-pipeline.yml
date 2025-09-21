@@ -26,7 +26,7 @@ jobs:
         run: pip install -r app/requirements.txt
 
       - name: Run unit tests with pytest
-        run: pytest -q app/tests/
+        run: pytest -q tests/
 
   # --- JOB 2: Análise de Segurança Estática (SAST & SCA) ---
   security-scan:

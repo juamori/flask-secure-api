@@ -1,0 +1,11 @@
+rules:
+  - id: insecure-secret
+    patterns:
+      - pattern: SECRET_KEY = $X
+    message: 'Hardcoded secret detected. Use environment variables.'
+    severity: ERROR
+  - id: jwt-exp
+    patterns:
+      - pattern: jwt.encode({... 'exp': $EXP ...}, ...)
+    message: 'JWT expiration set. Confirm it's appropriate.'
+    severity: INFO

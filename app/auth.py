@@ -16,11 +16,11 @@ def register():
     if not username or not password:
         return jsonify({"error": "username and password required"}), 400
 
-    if User.query.filter_by(username=username).first():
+    if models.User.query.filter_by(username=username).first():
         return jsonify({"error": "user already exists"}), 400
 
     hashed_pw = generate_password_hash(password)
-    new_user = User(username=username, password=hashed_pw)
+    new_user = models.User(username=username, password=hashed_pw)
     db.session.add(new_user)
     db.session.commit()
 
@@ -36,10 +36,10 @@ def login():
     if not username or not password:
         return jsonify({"error": "username and password required"}), 400
 
-    user = User.query.filter_by(username=username).first()
+    user = models.User.query.filter_by(username=username).first()
+
     if not user or not check_password_hash(user.password, password):
         return jsonify({"error": "invalid credentials"}), 401
-
     token = jwt.encode(
         {
             "sub": username,

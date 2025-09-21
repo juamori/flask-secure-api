@@ -53,7 +53,7 @@ def login():
         algorithm=current_app.config["JWT_ALGORITHM"]
     )
 
-    return jsonify({"token": token})
+    return jsonify({"access_token": token})
 
 
 @auth_bp.route("/protected", methods=["GET"])

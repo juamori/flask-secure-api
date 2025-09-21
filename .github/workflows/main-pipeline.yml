@@ -49,12 +49,13 @@ jobs:
           output: semgrep.sarif
         continue-on-error: true
 
-      - name: Create empty SARIF file if none exists
+      - name: Create empty SARIF file if none was generated
         if: ${{ success() && ! hashFiles('semgrep.sarif') }}
         run: |
           echo '{"version": "2.1.0", "runs": [], "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json"}' > semgrep.sarif
 
       - name: Upload Semgrep SARIF to GitHub Security
+        if: hashFiles('semgrep.sarif') != ''
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif
@@ -68,7 +69,7 @@ jobs:
         run: pip install pip-audit
 
       - name: Run pip-audit SCA Scan
-        run: pip-audit -r requirements.txt --format json > pip-audit.json
+        run: pip-audit -r app/requirements.txt --format json > pip-audit.json
       
       - name: Upload pip-audit report as artifact
         uses: actions/upload-artifact@v4
@@ -88,7 +89,7 @@ jobs:
       - name: Start application with docker-compose
         run: docker-compose up -d --build
 
-      - name: Wait for API to be ready
+      - name: Wait for API to be ready (Health Check)
         run: |
           echo "Waiting for API to start..."
           timeout 60s bash -c 'until curl -s http://localhost:5000/ > /dev/null; do echo "API not up yet, sleeping for 3s..."; sleep 3; done'

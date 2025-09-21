@@ -9,6 +9,8 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
+    from app import models
+
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
@@ -29,6 +31,8 @@ def register():
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
+    from app import models
+
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")

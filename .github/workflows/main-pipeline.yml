@@ -49,13 +49,23 @@ jobs:
           output: semgrep.sarif
         continue-on-error: true
 
-      - name: Create empty SARIF file if none was generated
-        if: ${{ success() && ! hashFiles('semgrep.sarif') }}
+      - name: Check for results in SARIF file
+        id: sarif_check
+        if: always() && hashFiles('semgrep.sarif') != ''
         run: |
-          echo '{"version": "2.1.0", "runs": [], "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json"}' > semgrep.sarif
+          # Instala jq, uma ferramenta para processar JSON
+          sudo apt-get install -y jq
+          
+          # Lê o arquivo e conta o número de resultados
+          RESULT_COUNT=$(jq '.runs[0].results | length' semgrep.sarif)
+          if [ "$RESULT_COUNT" -gt 0 ]; then
+            echo "has_results=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_results=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Upload Semgrep SARIF to GitHub Security
-        if: hashFiles('semgrep.sarif') != ''
+        if: steps.sarif_check.outputs.has_results == 'true'
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif

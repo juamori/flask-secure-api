@@ -1,10 +1,11 @@
-_users = {}
+from app.extensions import db
 
-def create_user(username, password_hash):
-    if username in _users:
-        return False
-    _users[username] = {'password': password_hash}
-    return True
+class User(db.Model):
+    """Modelo de dados para os usuários."""
 
-def get_user(username):
-    return _users.get(username)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+
+    def __repr__(self):
+        return f'<User {self.username}>'

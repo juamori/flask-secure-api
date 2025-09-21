@@ -27,6 +27,8 @@ jobs:
 
       - name: Run unit tests with pytest
         run: pytest -q tests/
+        env:
+          PYTHONPATH: .
 
   # --- JOB 2: Análise de Segurança Estática (SAST & SCA) ---
   security-scan:

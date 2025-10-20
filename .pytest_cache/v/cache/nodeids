@@ -1,0 +1,9 @@
+[
+  "tests/test_auth.py::test_login_and_access_protected_route",
+  "tests/test_auth.py::test_login_invalid_password",
+  "tests/test_auth.py::test_protected_route_no_token",
+  "tests/test_auth.py::test_register_existing_user_fails",
+  "tests/test_auth.py::test_register_login_protected",
+  "tests/test_auth.py::test_register_user_success",
+  "tests/test_consent.py::test_consent_endpoint_creates_log"
+]

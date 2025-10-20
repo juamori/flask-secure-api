@@ -1,0 +1,4 @@
+{
+  "tests/test_auth.py::test_register_user_success": true,
+  "tests/test_auth.py::test_register_existing_user_fails": true
+}

@@ -40,3 +40,7 @@ Inclui:
 - pip-audit gera relatório de dependências em `sca.yml`.
 - OWASP ZAP Ageção (baseline) é usada em `dast.yml` após iniciar a aplicação em containers.
 
+## Autoria 
+- Julia Amorim RM99609
+- Lana Leite RM551143
+- Matheus Cavasini RM97722

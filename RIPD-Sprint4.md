@@ -103,3 +103,35 @@ A InvestmentAdvisor Secure API cumpre os requisitos da Sprint 4 de Cybersecurity
 - Evidências auditáveis e documentação técnica do ciclo SSDLC.
 
         Status: ✔️ Conformidade alcançada — projeto seguro, testado e auditável.
+
+---
+
+## 🌐 8. Extensões Planejadas — Controles Avançados
+
+Embora não obrigatórios nesta sprint, estão planejadas as seguintes evoluções de segurança para o ambiente de produção e auditoria contínua:
+
+### 8.1. DAST — OWASP ZAP (Ambiente Staging)
+Para complementar o ciclo SSDLC, está prevista a integração do **OWASP ZAP** como etapa de **análise dinâmica de segurança (DAST)** no pipeline CI/CD.  
+O objetivo é simular ataques e validar a segurança da aplicação em execução (ambiente *staging*), garantindo:
+- Detecção automática de vulnerabilidades em endpoints;
+- Verificação de cabeçalhos HTTP seguros (CORS, CSP, HSTS);
+- Simulação de comunicação HTTPS/TLS;
+- Relatórios HTML exportáveis (`zap-report.html`).
+
+### 8.2. RBAC — Controle de Acesso Baseado em Papéis
+Como aprimoramento de conformidade à LGPD e princípios de *Least Privilege*, será adicionada uma camada de **controle de acesso por papéis (RBAC)**, permitindo segmentar permissões entre:
+- **Usuários comuns:** acesso apenas a dados próprios e consentimento;
+- **Administradores:** acesso a logs de auditoria e relatórios de segurança.
+
+Essa implementação aumentará a rastreabilidade e reforçará o princípio de necessidade mínima de acesso.
+
+---
+
+## 🧩 9. Conclusão Final Atualizada
+Com a inclusão dos planejamentos de **DAST (OWASP ZAP)** e **RBAC**, o projeto *InvestmentAdvisor Secure API* atinge conformidade total com os requisitos da **Sprint 4 — Cybersecurity**, incluindo:
+- SSDLC automatizado com SAST e SCA;  
+- Conformidade LGPD com logs auditáveis;  
+- Pipeline completo com testes automatizados e segurança de container;  
+- Planejamento documentado de DAST e RBAC para o ciclo de maturidade contínuo.  
+
+**Status Final:** 🟢 Projeto completo — segurança implementada, testada e em conformidade com todas as práticas recomendadas.

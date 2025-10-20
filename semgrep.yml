@@ -1,11 +1,122 @@
 rules:
-  - id: insecure-secret
+  # ==============================
+  # 🧩 Segurança geral em Python
+  # ==============================
+
+  - id: avoid-eval
     patterns:
-      - pattern: SECRET_KEY = $X
-    message: 'Hardcoded secret detected. Use environment variables.'
+      - pattern: eval($X)
+    message: "Uso de eval() detectado — risco de execução de código arbitrário."
     severity: ERROR
-  - id: jwt-exp
+    languages: [python]
+
+  - id: avoid-exec
     patterns:
-      - pattern: jwt.encode({... 'exp': $EXP ...}, ...)
-    message: 'JWT expiration set. Confirm it's appropriate.'
+      - pattern: exec($X)
+    message: "Uso de exec() detectado — substitua por funções seguras."
+    severity: ERROR
+    languages: [python]
+
+  - id: avoid-os-system
+    patterns:
+      - pattern: os.system($X)
+    message: "Uso de os.system() detectado — risco de comando arbitrário (Command Injection)."
+    severity: WARNING
+    languages: [python]
+
+  - id: avoid-subprocess-shell-true
+    patterns:
+      - pattern: subprocess.Popen($X, shell=True, ...)
+    message: "Evite subprocess com shell=True — pode permitir execução de código malicioso."
+    severity: ERROR
+    languages: [python]
+
+  - id: unsafe-tempfile
+    patterns:
+      - pattern: tempfile.mktemp()
+    message: "Uso inseguro de tempfile.mktemp() — pode causar condição de corrida."
+    severity: WARNING
+    languages: [python]
+
+  # =====================================
+  # 🧠 Segurança em autenticação Flask
+  # =====================================
+
+  - id: insecure-password-storage
+    patterns:
+      - pattern: db.session.add(User(username=$U, password=$P))
+      - pattern-not: generate_password_hash($P)
+    message: "Senha possivelmente armazenada sem hash seguro (use generate_password_hash)."
+    severity: ERROR
+    languages: [python]
+
+  - id: jwt-hardcoded-secret
+    patterns:
+      - pattern: jwt.encode($PAYLOAD, "..." , ...)
+    message: "Chave secreta JWT hardcoded detectada — use variável de ambiente."
+    severity: ERROR
+    languages: [python]
+
+  - id: jwt-missing-exp
+    patterns:
+      - pattern: jwt.encode($PAYLOAD, $KEY)
+      - pattern-not: jwt.encode({"exp": ..., ...}, ...)
+    message: "Token JWT sem expiração — inclua campo 'exp' no payload."
+    severity: WARNING
+    languages: [python]
+
+  # =====================================
+  # 🪪 LGPD / Privacidade / Logging
+  # =====================================
+
+  - id: log-personal-data
+    patterns:
+      - pattern: logger.info($X)
+    message: "Revisar logs para garantir que não contenham dados pessoais ou sensíveis (LGPD)."
     severity: INFO
+    languages: [python]
+
+  - id: consent-log-append-only
+    patterns:
+      - pattern: open("consent.log", "w")
+    message: "Arquivo de consentimento aberto em modo 'w' — use 'a' (append-only)."
+    severity: ERROR
+    languages: [python]
+
+  # =====================================
+  # 🧩 Boas práticas de Flask e API
+  # =====================================
+
+  - id: debug-mode-enabled
+    patterns:
+      - pattern: app.run(..., debug=True, ...)
+    message: "Modo debug ativo — desative em produção."
+    severity: WARNING
+    languages: [python]
+
+  - id: missing-https-only-cookie
+    patterns:
+      - pattern: response.set_cookie($NAME, $VALUE)
+      - pattern-not: response.set_cookie($NAME, $VALUE, secure=True, httponly=True)
+    message: "Cookie sem flag Secure/HttpOnly — vulnerável a ataques XSS ou session hijacking."
+    severity: WARNING
+    languages: [python]
+
+  # =====================================
+  # 🧾 Segurança de Configurações
+  # =====================================
+
+  - id: secret-key-hardcoded
+    patterns:
+      - pattern: app.config["SECRET_KEY"] = "..."
+    message: "SECRET_KEY definida diretamente no código — use variável de ambiente."
+    severity: ERROR
+    languages: [python]
+
+  - id: missing-nonroot-user
+    patterns:
+      - pattern: USER root
+    message: "Dockerfile executando como root — configure USER nonroot no final do arquivo."
+    severity: WARNING
+    languages: [dockerfile]
+
